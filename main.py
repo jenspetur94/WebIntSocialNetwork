@@ -4,11 +4,6 @@ from user import User
 from gap import Gap
 
 def main():
-    A = np.mat("3 2; 1 0")
-    print("A :", A)
-    print("Eigenvalues :", np.linalg.eigvals(A))
-    eigenvalue,eigenvector = np.linalg.eig(A)
-    print("Eigenvector:", eigenvector)
     f = open("friendships.reviews.txt", "r")
 
     a = f.readlines()
@@ -40,13 +35,16 @@ def main():
 # 10 og 100, 109 og 200, 205 og 230
 # Cluster 10 > og < 100
 def CutAtGaps(eigVector):
-    orderedEigVector = eigVector.sort()
-    length = len(orderedEigVector)
+    orderedEigVector = eigVector.tolist()
+    orderedEigVector.sort()
+    #print(orderedEigVector)
+    length = eigVector.size
     maxdifference = [Gap(-1, -1, -1), Gap(-1, -1, -1), Gap(-1, -1, -1)]
     for x in range(0, (length - 1)):
         head = orderedEigVector[x]
         tail = orderedEigVector[x+1]
         distance = orderedEigVector[x-1] - orderedEigVector[x]
+        # sorter maxdifference så den med lavest distance ligger forest
         for y in range(0,2):
             if(maxdifference[y].distance < distance):
                 maxdifference[y].distance = distance
@@ -55,7 +53,16 @@ def CutAtGaps(eigVector):
                 break
 
 
-    print(maxdifference)
+    print(maxdifference[0].distance)
+    print(maxdifference[0].head)
+    print(maxdifference[0].tail)
+    print(maxdifference[1].distance)
+    print(maxdifference[1].head)
+    print(maxdifference[1].tail)    
+    print(maxdifference[2].distance)
+    print(maxdifference[2].head)
+    print(maxdifference[2].tail)
+
 
 def CreateAdjacencyMatrix(users):
     length = len(users)
@@ -96,7 +103,9 @@ def Laplacian(adjacencyMatrix):
 
 def CalculateEigenVector(laplacianMatrix):
     eigenvalue,eigenvector = np.linalg.eig(laplacianMatrix)
-    return eigenvector
+    eigenvector = eigenvector.real
+    print(type(eigenvector[1]))
+    return eigenvector[1]
 
 if __name__ == "__main__":
     main()
